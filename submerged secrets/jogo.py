@@ -65,7 +65,7 @@ def tela_menu():
 
 def main():
     # Variáveis do jogo
-    jogador_size = 40
+    jogador_size = 30
     jogador = pygame.Rect(100, 100, jogador_size, jogador_size)
     velocidade = 5
 
@@ -124,4 +124,5 @@ def main():
 
 if __name__ == "__main__":
     tela_menu()
+
     main()
