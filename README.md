@@ -31,7 +31,7 @@ pygame.display.set_caption("Submerged Secrets")
 fonte_menu = pygame.font.SysFont("arial", 36)
 fonte_jogo = pygame.font.SysFont("arial", 24)
 
-# Carregar imagens (certifique-se de que todos esses arquivos existam)
+# Carregar imagens 
 imagens_itens = {
     "Bau": pygame.image.load("bau.png"),
     "Perola": pygame.image.load("perola.png"),
