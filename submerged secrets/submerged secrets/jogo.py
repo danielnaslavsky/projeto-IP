@@ -1,0 +1,219 @@
+import pygame
+import random
+import os
+import sys
+
+pygame.init()
+pygame.mixer.init()
+pygame.mixer.music.load("musica.mp3")
+pygame.mixer.music.play(-1)
+pygame.mixer.music.set_volume(0.2)
+som_coleta = pygame.mixer.Sound("coletar.mp3")
+som_gameover = pygame.mixer.Sound("gameover.mp3")
+
+
+MARGEM_LATERAL = 90
+MARGEM_SUPERIOR = 90
+
+LARGURA, ALTURA = 800, 600
+
+BRANCO = (255, 255, 255)
+VERMELHO = (255, 0, 0)
+CINZA_CLARO = (200, 200, 200)
+COR_OXIGENIO = (0, 255, 255)
+
+TIPOS_ITENS = ["Bau", "Perola", "Garrafa", "Oxigenio"]
+
+tela = pygame.display.set_mode((LARGURA, ALTURA))
+pygame.display.set_caption("Submerged Secrets")
+
+fonte_menu = pygame.font.SysFont("arial", 36)
+fonte_jogo = pygame.font.SysFont("arial", 24)
+
+# Carregar imagens (certifique-se de que todos esses arquivos existam)
+imagens_itens = {
+    "Bau": pygame.image.load("bau.png"),
+    "Perola": pygame.image.load("perola.png"),
+    "Garrafa": pygame.image.load("garrafa.png"),
+    "Oxigenio": pygame.image.load("oxigenio.png")
+}
+imagem_tubarao = pygame.transform.scale(pygame.image.load("tubarao.png"), (160, 160))
+imagem_mergulhador = pygame.transform.scale(pygame.image.load("mergulhador.png"), (80, 80))
+
+for chave in imagens_itens:
+    imagens_itens[chave] = pygame.transform.scale(imagens_itens[chave], (40, 40))
+
+contadores = {"Bau": 0, "Perola": 0, "Garrafa": 0}
+
+def criar_item():
+    tipo = random.choice(TIPOS_ITENS)
+    x = random.randint(MARGEM_LATERAL, LARGURA - MARGEM_LATERAL - 20)
+    y = random.randint(MARGEM_SUPERIOR, ALTURA - MARGEM_SUPERIOR - 20)
+    rect = pygame.Rect(x, y, 20, 20)
+    return {"rect": rect, "tipo": tipo}
+
+def tela_menu():
+    rodando_menu = True
+    fonte_titulo = pygame.font.SysFont("arial", 92) if not os.path.exists("Pieces of Eight.ttf") else pygame.font.Font("Pieces of Eight.ttf", 92)
+    fonte_instrucao = pygame.font.SysFont("arial", 28)
+    imagem_menu = pygame.transform.scale(pygame.image.load("tela menu.jpg"), (LARGURA, ALTURA))
+    mostrar_texto = True
+    tempo_anterior = pygame.time.get_ticks()
+    intervalo_piscar = 500
+
+    while rodando_menu:
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if e.type == pygame.KEYDOWN and e.key == pygame.K_RETURN:
+                rodando_menu = False
+
+        agora = pygame.time.get_ticks()
+        if agora - tempo_anterior > intervalo_piscar:
+            mostrar_texto = not mostrar_texto
+            tempo_anterior = agora
+
+        tela.blit(imagem_menu, (0, 0))
+        titulo = fonte_titulo.render("Submerged Secrets", True, BRANCO)
+        tela.blit(titulo, titulo.get_rect(center=(LARGURA // 2, ALTURA // 3)))
+        if mostrar_texto:
+            instr = fonte_instrucao.render("Pressione ENTER para começar", True, BRANCO)
+            tela.blit(instr, instr.get_rect(center=(LARGURA // 2, ALTURA // 2)))
+
+        pygame.display.flip()
+
+def tela_game_over():
+    fonte_go = pygame.font.Font("Pieces of Eight.ttf", 96)
+    fonte_rel = pygame.font.Font("Pieces of Eight.ttf", 30)
+    fonte_instr = pygame.font.SysFont("arial", 28)
+    imagem_go = pygame.transform.scale(pygame.image.load("tela menu.jpg"), (LARGURA, ALTURA))
+    mostrar = True
+    ant = pygame.time.get_ticks()
+    intervalo = 500
+
+    while True:
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if e.type == pygame.KEYDOWN and e.key == pygame.K_RETURN:
+                return
+
+        agora = pygame.time.get_ticks()
+        if agora - ant > intervalo:
+            mostrar = not mostrar
+            ant = agora
+
+        tela.blit(imagem_go, (0, 0))
+        go = fonte_go.render("Game Over", True, VERMELHO)
+        tela.blit(go, go.get_rect(center=(LARGURA // 2, ALTURA // 3)))
+        tela.blit(fonte_rel.render(f"Baús coletados: {contadores['Bau']}", True, (255,124,0)), (260, 250))
+        tela.blit(fonte_rel.render(f"Pérolas coletadas: {contadores['Perola']}", True, (255,124,0)), (260, 290))
+        tela.blit(fonte_rel.render(f"Garrafas coletadas: {contadores['Garrafa']}", True, (255,124,0)), (260, 330))
+        if mostrar:
+            inst = fonte_instr.render("ENTER para voltar ao menu", True, BRANCO)
+            tela.blit(inst, inst.get_rect(center=(LARGURA // 2, ALTURA / 1.4)))
+        pygame.display.flip()
+
+def main():
+    for chave in contadores:
+        contadores[chave] = 0
+
+    pos_x, pos_y = 100, 100
+    jogador = pygame.Rect(pos_x + 30, pos_y + 30, 20, 20)
+    velocidade = 5
+
+    pos_xt = random.randint(0, LARGURA - 160)
+    pos_yt = random.randint(0, ALTURA - 160)
+    tubarao = pygame.Rect(pos_xt + 40, pos_yt + 40, 80, 80)
+    dirs = [random.choice([-1, 1]), random.choice([-1, 1])]
+    vel_t = 5
+
+    itens = [criar_item() for _ in range(3)]
+    pygame.time.set_timer(pygame.USEREVENT, 3000)
+
+    oxi_max = 30000
+    oxi_rest = oxi_max
+    ant_oxi = pygame.time.get_ticks()
+
+    clock = pygame.time.Clock()
+    img_jt = pygame.transform.scale(pygame.image.load("tela jogo.png"), (LARGURA, ALTURA))
+
+    rodando = True
+    while rodando:
+        clock.tick(60)
+
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                rodando = False
+            if e.type == pygame.USEREVENT:
+                itens.append(criar_item())
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]: pos_x -= velocidade
+        if keys[pygame.K_RIGHT]: pos_x += velocidade
+        if keys[pygame.K_UP]: pos_y -= velocidade
+        if keys[pygame.K_DOWN]: pos_y += velocidade
+
+        pos_x = max(0, min(pos_x, LARGURA - 80))
+        pos_y = max(0, min(pos_y, ALTURA - 80))
+        jogador.x, jogador.y = pos_x + 30, pos_y + 30
+
+        pos_xt += dirs[0] * vel_t
+        pos_yt += dirs[1] * vel_t
+        if pos_xt < 0 or pos_xt > LARGURA - 160: dirs[0] *= -1
+        if pos_yt < 0 or pos_yt > ALTURA - 160: dirs[1] *= -1
+        tubarao.x, tubarao.y = pos_xt + 40, pos_yt + 40
+
+        # Verifica colisão com tubarão para game over
+        if jogador.colliderect(tubarao):
+            som_gameover.play()
+            tela_game_over()
+            return
+
+        now = pygame.time.get_ticks()
+        passada = now - ant_oxi
+        oxi_rest -= passada
+        ant_oxi = now
+        if oxi_rest <= 0:
+            som_gameover.play()
+            tela_game_over()
+            return
+
+        for item in itens[:]:
+            if jogador.colliderect(item["rect"]):
+                if item["tipo"] == "Oxigenio":
+                    oxi_rest = min(oxi_rest + 10000, oxi_max)
+                else:
+                    contadores[item["tipo"]] += 1
+                som_coleta.play()
+                itens.remove(item)
+
+        tela.blit(img_jt, (0, 0))
+        tela.blit(imagem_mergulhador, (pos_x, pos_y))
+        tela.blit(imagem_tubarao, (pos_xt, pos_yt))
+        for it in itens:
+            tela.blit(imagens_itens[it["tipo"]], it["rect"])
+
+        # Contador com imagens e números ao lado
+        x_base = 10
+        y_base = 10
+        espaco_entre = 60
+
+        for i, chave in enumerate(["Bau", "Perola", "Garrafa"]):
+            tela.blit(imagens_itens[chave], (x_base + i * espaco_entre, y_base))
+            texto = fonte_jogo.render(str(contadores[chave]), True, CINZA_CLARO)
+            tela.blit(texto, (x_base + 40 + i * espaco_entre, y_base + 10))
+
+        # Oxigênio em texto separado
+        tela.blit(fonte_jogo.render(f"Oxigênio: {max(0, oxi_rest // 1000)}s", True, COR_OXIGENIO), (10, 70))
+
+        pygame.display.flip()
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    while True:
+        tela_menu()
+        main()
