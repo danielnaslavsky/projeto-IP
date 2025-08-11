@@ -30,7 +30,7 @@ pygame.display.set_caption("Submerged Secrets")
 fonte_menu = pygame.font.SysFont("arial", 36)
 fonte_jogo = pygame.font.SysFont("arial", 24)
 
-# Carregar imagens (certifique-se de que todos esses arquivos existam)
+# Carregar imagens
 imagens_itens = {
     "Bau": pygame.image.load("bau.png"),
     "Perola": pygame.image.load("perola.png"),
@@ -44,6 +44,8 @@ for chave in imagens_itens:
     imagens_itens[chave] = pygame.transform.scale(imagens_itens[chave], (40, 40))
 
 contadores = {"Bau": 0, "Perola": 0, "Garrafa": 0}
+pontuacoes = [0, 5]
+
 
 def criar_item():
     tipo = random.choice(TIPOS_ITENS)
@@ -84,8 +86,9 @@ def tela_menu():
         pygame.display.flip()
 
 def tela_game_over():
-    fonte_go = pygame.font.Font("Pieces of Eight.ttf", 96)
+    fonte_go = pygame.font.Font("Pieces of Eight.ttf", 96) 
     fonte_rel = pygame.font.Font("Pieces of Eight.ttf", 30)
+    fonte_pontuacao = pygame.font.Font("Pieces of Eight.ttf", 50)
     fonte_instr = pygame.font.SysFont("arial", 28)
     imagem_go = pygame.transform.scale(pygame.image.load("tela menu.jpg"), (LARGURA, ALTURA))
     mostrar = True
@@ -108,12 +111,13 @@ def tela_game_over():
         tela.blit(imagem_go, (0, 0))
         go = fonte_go.render("Game Over", True, VERMELHO)
         tela.blit(go, go.get_rect(center=(LARGURA // 2, ALTURA // 3)))
-        tela.blit(fonte_rel.render(f"Baús coletados: {contadores['Bau']}", True, (255,124,0)), (260, 250))
-        tela.blit(fonte_rel.render(f"Pérolas coletadas: {contadores['Perola']}", True, (255,124,0)), (260, 290))
-        tela.blit(fonte_rel.render(f"Garrafas coletadas: {contadores['Garrafa']}", True, (255,124,0)), (260, 330))
+        tela.blit(fonte_rel.render(f"Baús coletados: {contadores['Bau']}", True, (255,124,0)), (300, 250))
+        tela.blit(fonte_rel.render(f"Pérolas coletadas: {contadores['Perola']}", True, (255,124,0)), (282, 290))
+        tela.blit(fonte_rel.render(f"Garrafas coletadas: {contadores['Garrafa']}", True, (255,124,0)), (275, 330))
+        tela.blit(fonte_pontuacao.render(f"Pontuação Total: {pontuacoes[0]}", True, (100,150,0)), (219, 360))
         if mostrar:
             inst = fonte_instr.render("ENTER para voltar ao menu", True, BRANCO)
-            tela.blit(inst, inst.get_rect(center=(LARGURA // 2, ALTURA / 1.4)))
+            tela.blit(inst, inst.get_rect(center=(LARGURA // 2, ALTURA / 1.35)))
         pygame.display.flip()
 
 def main():
@@ -122,7 +126,7 @@ def main():
 
     pos_x, pos_y = 100, 100
     jogador = pygame.Rect(pos_x + 30, pos_y + 30, 20, 20)
-    velocidade = 5
+    velocidade = 3
 
     pos_xt = random.randint(0, LARGURA - 160)
     pos_yt = random.randint(0, ALTURA - 160)
@@ -176,20 +180,30 @@ def main():
         passada = now - ant_oxi
         oxi_rest -= passada
         ant_oxi = now
+        # Verifica se o tempo acabou
         if oxi_rest <= 0:
             som_gameover.play()
             tela_game_over()
             return
-
+        # Verifica se o jogador coletou o oxigênio 
         for item in itens[:]:
             if jogador.colliderect(item["rect"]):
                 if item["tipo"] == "Oxigenio":
+                    # Adiciona tempo do oxigênio
                     oxi_rest = min(oxi_rest + 10000, oxi_max)
                 else:
                     contadores[item["tipo"]] += 1
                 som_coleta.play()
                 itens.remove(item)
-
+            if jogador.colliderect(item["rect"]):
+                if item["tipo"] == "Garrafa":
+                    velocidade += velocidade * 0.07
+                if item["tipo"] == 'Perola':
+                    vel_t += vel_t * 0.1
+                    pontuacoes[1] += 5
+                if item["tipo"] == 'Bau':
+                    pontuacoes[0] += pontuacoes[1]
+        
         tela.blit(img_jt, (0, 0))
         tela.blit(imagem_mergulhador, (pos_x, pos_y))
         tela.blit(imagem_tubarao, (pos_xt, pos_yt))
@@ -209,6 +223,8 @@ def main():
         # Oxigênio em texto separado
         tela.blit(fonte_jogo.render(f"Oxigênio: {max(0, oxi_rest // 1000)}s", True, COR_OXIGENIO), (10, 70))
 
+        # Mostrar pontuação
+        tela.blit(fonte_jogo.render(f"Pontuação: {pontuacoes[0]}", True, BRANCO), (10, 95))
         pygame.display.flip()
 
     pygame.quit()
