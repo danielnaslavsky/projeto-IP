@@ -118,3 +118,13 @@ Organizado em um único arquivo principal com:
 
 ---
 
+## Imagens do Jogo
+
+<div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 50px;">
+
+  <img src="imagens_readme/foto inicio.png" alt="foto inicio" width="460"/>
+  <img src="imagens_readme/foto meio.png" alt="foto meio" width="460"/>
+  <img src="imagens_readme/foto fim.png" alt="foto meio" width="460"/>
+
+</div>
+
