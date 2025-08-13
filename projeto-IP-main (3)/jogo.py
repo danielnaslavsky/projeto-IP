@@ -193,7 +193,7 @@ def main():
             return
 
         now = pygame.time.get_ticks()
-        passada = now - ant_oxi
+        passada = now - ant_oxigenio
         oxigenio_rest -= passada
         ant_oxigenio = now
         #Verifica se o tempo acabou e o jogador morre por falta de ar 
@@ -238,7 +238,7 @@ def main():
             tela.blit(texto, (x_base + 40 + i * espaco_entre, y_base + 10))
 
         #Oxigênio em texto separado
-        tela.blit(fonte_jogo.render(f"Oxigênio: {max(0, oxi_rest // 1000)}s", True, COR_OXIGENIO), (10, 70))
+        tela.blit(fonte_jogo.render(f"Oxigênio: {max(0, oxigenio_rest // 1000)}s", True, COR_OXIGENIO), (10, 70))
 
         #Mostrar pontuação no final do jogo
         tela.blit(fonte_jogo.render(f"Pontuação: {pontuacoes[0]}", True, BRANCO), (10, 95))
@@ -251,3 +251,4 @@ if __name__ == "__main__":
         tela_menu()
 
         main()
+
