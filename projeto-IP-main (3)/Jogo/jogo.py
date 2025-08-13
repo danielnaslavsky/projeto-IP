@@ -3,15 +3,17 @@ import random
 import os
 import sys
 
+#os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 #Iniciando o jogo
 pygame.init()
 pygame.mixer.init()
 #Música (trilha sonora, efeito de quando coleta um ítem, efeito de quando perde)
-pygame.mixer.music.load("musica.mp3")
+pygame.mixer.music.load("..","audios","musica.mp3")
+som_coleta = pygame.mixer.Sound(os.path.join("..", "audios", "coletar.mp3"))
+som_gameover = pygame.mixer.Sound(os.path.join("..", "audios", "gameover.mp3"))
 pygame.mixer.music.play(-1)
 pygame.mixer.music.set_volume(0.2)
-som_coleta = pygame.mixer.Sound("coletar.mp3")
-som_gameover = pygame.mixer.Sound("gameover.mp3")
 
 #Medidas da tela
 MARGEM_LATERAL = 90
@@ -36,13 +38,14 @@ fonte_jogo = pygame.font.SysFont("arial", 24)
 
 #Colocando as imagens no jogo
 imagens_itens = {
-    "Bau": pygame.image.load("bau.png"),
-    "Perola": pygame.image.load("perola.png"),
-    "Garrafa": pygame.image.load("garrafa.png"),
-    "Oxigenio": pygame.image.load("oxigenio.png")
+    "Bau": pygame.image.load(os.path.join("..", "Sprites", "bau.png")),
+    "Perola": pygame.image.load(os.path.join("..", "Sprites", "perola.png")),
+    "Garrafa": pygame.image.load(os.path.join("..", "Sprites", "garrafa.png")),
+    "Oxigenio": pygame.image.load(os.path.join("..", "Sprites", "oxigenio.png"))
 }
-imagem_tubarao = pygame.transform.scale(pygame.image.load("tubarao.png"), (160, 160))
-imagem_mergulhador = pygame.transform.scale(pygame.image.load("mergulhador.png"), (80, 80))
+
+imagem_tubarao = pygame.transform.scale(pygame.image.load(os.path.join("..", "Sprites", "tubarao.png")), (160, 160))
+imagem_mergulhador = pygame.transform.scale(pygame.image.load(os.path.join("..", "Sprites", "mergulhador.png")), (80, 80))
 
 for chave in imagens_itens:
     imagens_itens[chave] = pygame.transform.scale(imagens_itens[chave], (40, 40))
@@ -63,9 +66,9 @@ def criar_item():
 #Criando função para a tela do menu 
 def tela_menu():
     rodando_menu = True
-    fonte_titulo = pygame.font.SysFont("arial", 92) if not os.path.exists("Pieces of Eight.ttf") else pygame.font.Font("Pieces of Eight.ttf", 92)
+    fonte_titulo = pygame.font.Font(os.path.join("..", "Fonte", "Pieces of Eight.ttf"), 92)
     fonte_instrucao = pygame.font.SysFont("arial", 28)
-    imagem_menu = pygame.transform.scale(pygame.image.load("tela menu.jpg"), (LARGURA, ALTURA))
+    imagem_menu = pygame.transform.scale(pygame.image.load(os.path.join("..", "Fundos de tela", "tela menu.jpg")), (LARGURA, ALTURA))
     mostrar_texto = True
     tempo_anterior = pygame.time.get_ticks()
     intervalo_piscar = 500
@@ -95,11 +98,11 @@ def tela_menu():
 #Função para criar a tela quando o jogador perder o jogo
 def tela_game_over():
     #Definindo as fontes
-    fonte_go = pygame.font.Font("Pieces of Eight.ttf", 96) 
-    fonte_rel = pygame.font.Font("Pieces of Eight.ttf", 30)
-    fonte_pontuacao = pygame.font.Font("Pieces of Eight.ttf", 50)
+    fonte_go = pygame.font.Font(os.path.join("..", "Fonte", "Pieces of Eight.ttf"), 96)
+    fonte_rel = pygame.font.Font(os.path.join("..", "Fonte", "Pieces of Eight.ttf"), 30)
+    fonte_pontuacao = pygame.font.Font(os.path.join("..", "Fonte", "Pieces of Eight.ttf"), 50)
     fonte_instr = pygame.font.SysFont("arial", 28)
-    imagem_go = pygame.transform.scale(pygame.image.load("tela menu.jpg"), (LARGURA, ALTURA))
+    imagem_go = pygame.transform.scale(pygame.image.load(os.path.join("..", "Fundos de tela", "tela jogo.png")), (LARGURA, ALTURA))
     mostrar = True
     ant = pygame.time.get_ticks()
     intervalo = 500
@@ -157,7 +160,7 @@ def main():
 
     #Temporizador
     clock = pygame.time.Clock()
-    img_jt = pygame.transform.scale(pygame.image.load("tela jogo.png"), (LARGURA, ALTURA))
+    img_jt = pygame.transform.scale(pygame.image.load("../Fundos de tela/tela jogo.png"), (LARGURA, ALTURA))
 
     rodando = True
     while rodando:
