@@ -9,7 +9,7 @@ import sys
 pygame.init()
 pygame.mixer.init()
 #Música (trilha sonora, efeito de quando coleta um ítem, efeito de quando perde)
-pygame.mixer.music.load("..","audios","musica.mp3")
+pygame.mixer.music.load(os.path.join("..","audios","musica.mp3"))
 som_coleta = pygame.mixer.Sound(os.path.join("..", "audios", "coletar.mp3"))
 som_gameover = pygame.mixer.Sound(os.path.join("..", "audios", "gameover.mp3"))
 pygame.mixer.music.play(-1)
@@ -254,4 +254,5 @@ if __name__ == "__main__":
         tela_menu()
 
         main()
+
 
