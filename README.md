@@ -42,26 +42,28 @@ O trabalho foi desenvolvido **de forma colaborativa**, com funções específica
 
 A disciplina **Introdução à Programação** foi essencial para o desenvolvimento. Entre os conceitos aplicados:
 
-- **Funções**:
-  - criar_item() → gera coletáveis aleatórios  
-  - tela_menu() → exibe a tela inicial  
-  - tela_game_over() → mostra o fim do jogo  
-  - main() → controla o loop principal da gameplay
+- **Métodos / Funções**:
+  - Item.__init__() → cria coletáveis aleatórios.  
+  - Jogo.tela_menu() → exibe a tela inicial.  
+  - Jogo.tela_game_over() → mostra o fim do jogo.  
+  - Jogo.rodar() → controla o loop principal da gameplay.  
+  - Jogador.mover() → movimenta o jogador.  
+  - Tubarao.mover() → movimenta o tubarão.  
 
 - **Condicionais (if/else)**:
-  - Detectar colisões  
-  - Adicionar oxigênio ou pontuação  
-  - Inverter direção do tubarão  
-  - Encerrar o jogo  
+  - Detectar colisões entre jogador e itens ou tubarão.  
+  - Adicionar oxigênio ou atualizar pontuação ao coletar itens.  
+  - Inverter direção do tubarão ao bater nas bordas.  
+  - Encerrar o jogo quando oxigênio acabar ou houver colisão com tubarão.  
 
 - **Estruturas de repetição (while, for)**:
-  - Loop principal do jogo  
-  - Percorrer itens para verificar colisões  
-  - Exibir contagem de itens  
+  - Loop principal do jogo (Jogo.rodar()).  
+  - Percorrer lista de itens para verificar colisões.  
+  - Exibir contagem de itens coletados na tela.  
 
 - **Dicionários**:
-  - Armazenar quantidade de itens coletados  
-  - Ex.: contadores = {"Bau": 0, "Perola": 0, "Garrafa": 0}
+  - Armazenar quantidade de itens coletados: self.contadores = {"Bau": 0, "Perola": 0, "Garrafa": 0}.  
+  - Armazenar pontuações: self.pontuacoes = [0, 5].
 
 ---
 
@@ -90,17 +92,38 @@ Organizado em um único arquivo principal com:
 - Carregamento e redimensionamento de imagens
 - Dicionário contadores para itens
 
-### Funções principais
-- criar_item() → gera posição e tipo de item
-- tela_menu() → exibe tela inicial
-- tela_game_over() → mostra resultados finais
-- main() → loop principal (movimento, colisões, exibição)
+## Partes Modularizadas
+- Função Jogo.tela_menu() 
+   Exibe o menu inicial no início do jogo a cada nova partida.
+- Função Jogador.mover() e Tubarao.mover()
+   Controla o movimento do personagem analisado. Foi usada para o jogador e para o tubarão.
+- Função Jogo.tela_game_over()
+   Exibe a tela final do jogo, mostrando a pontuação final do jogador junto com o número de coletáveis conquistados.
+- Função Jogo.rodar() 
+   Executa o loop principal e integra os outros módulos.
+- Função Jogador.desenhar()
+   Auxilia na arte visual do jogo.
+  - Função Jogo.resetar() 
+  Reinicia as variáveis do jogo permitindo começar uma nova partida
 
-### Fluxo de execução
-1. Inicia com tela_menu()
-2. Ao pressionar ENTER → executa main()
-3. Se colidir com tubarão ou acabar oxigênio → tela_game_over()
-4. Pode reiniciar a partir do menu
+---
+
+## Orientação a Objetos (OO)
+- Classe Jogador 
+   Atribui a posição X e Y, a velocidade, a hitbox e a imagem.
+- Classe Tubarao
+   Atribui a posição X e Y, a velocidade, a hitbox e a imagem.
+- Classe Item
+   Atribui os coletáveis (suas imagens, posições e hitbox).
+- Classe Jogo 
+   Atribui o jogador, o tubarão, os coletáveis, as pontuações, os sons, as imagens, etc.
+
+
+### Fluxo de Execução
+1. Inicia com Jogo.tela_menu().
+2. Ao pressionar **ENTER** → executa Jogo.rodar().
+3. Se colidir com o tubarão ou o oxigênio acabar → Jogo.tela_game_over().
+4. A partir da tela de menu, o jogador pode reiniciar uma nova partida.
 
 ---
 
