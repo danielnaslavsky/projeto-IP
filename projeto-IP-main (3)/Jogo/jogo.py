@@ -136,9 +136,8 @@ def main():
     for chave in contadores:
         contadores[chave] = 0
         
-    #zera a pontuação total ao iniciar novo jogo
-    pontuacoes[0] = 0     
-    
+    #zera a pontuação total ao iniciar novo jogo e o bonus
+    pontuacoes = [0,5]
     #Posição do jogador no eixo x e y 
     pos_x, pos_y = 100, 100
     jogador = pygame.Rect(pos_x + 30, pos_y + 30, 20, 20)
@@ -257,6 +256,7 @@ if __name__ == "__main__":
         tela_menu()
 
         main()
+
 
 
 
